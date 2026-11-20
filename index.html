@@ -1345,94 +1345,11 @@
       URL.revokeObjectURL(url);
       showToast("Archivo HTML actualizado descargado");
     }
-async function sincronizarDesdeNube() {
-  if (!window.cloudDB) return;
-  try {
-    const datosNube = await window.cloudDB.cargarCatalogo();
-    if (datosNube) {
-      if (datosNube.products) products = datosNube.products;
-      if (datosNube.config) {
-        storeConfig = datosNube.config;
-        applyStoreConfig();
-      }
-      renderCatalog();
-    } else {
-      await subirANube();
-    }
-  } catch (e) {
-    console.error("Error cargando de Firebase:", e);
-  }
-}
-
-async function subirANube() {
-  if (!window.cloudDB) return;
-  try {
-    await window.cloudDB.guardarCatalogo({
-      products: products,
-      config: storeConfig,
-      ultimaActualizacion: new Date().toISOString()
-    });
-    showToast("☁️ ¡Guardado en la nube para todos los clientes!");
-  } catch (e) {
-    console.error("Error guardando en Firebase:", e);
-    showToast("⚠️ Error al guardar en la nube");
-  }
-}
-
-const originalSaveProduct = saveProductForm;
-saveProductForm = function(e) {
-  originalSaveProduct(e);
-  subirANube();
-};
-
-const originalDeleteProduct = deleteCurrentProduct;
-deleteCurrentProduct = function() {
-  originalDeleteProduct();
-  subirANube();
-};
-
-const originalSaveSettings = saveStoreSettings;
-saveStoreSettings = function(e) {
-  originalSaveSettings(e);
-  subirANube();
-};
-
-window.addEventListener("firebase-listo", sincronizarDesdeNube);
 
     // INICIALIZACIÓN
     applyStoreConfig();
     updateAdminUI();
     renderCatalog();
-  </script> 
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyB39KYLoCE-vmYyvr8qOm_V3KW878AhFQE",
-    authDomain: "alvir-moto-store-catalog-bd50c.firebaseapp.com",
-    projectId: "alvir-moto-store-catalog-bd50c",
-    storageBucket: "alvir-moto-store-catalog-bd50c.firebasestorage.app",
-    messagingSenderId: "180778856521",
-    appId: "1:180778856521:web:52cfeeae5399357720cf98",
-    measurementId: "G-1G9VPXPE3Y"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  window.cloudDB = {
-    cargarCatalogo: async () => {
-      const snap = await getDoc(doc(db, "tienda", "catalogo"));
-      return snap.exists() ? snap.data() : null;
-    },
-    guardarCatalogo: async (datos) => {
-      await setDoc(doc(db, "tienda", "catalogo"), datos);
-    }
-  };
-
-  window.dispatchEvent(new Event("firebase-listo"));
   </script>
-  
 </body>
 </html>
