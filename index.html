@@ -875,11 +875,11 @@
         <form onsubmit="handleAdminLogin(event)">
           <div class="form-group">
             <label>Perfil / Usuario</label>
-            <input type="text" id="loginUser" placeholder="Ej. dueño albir motostore" required />
+            <input type="text" id="loginUser" placeholder="" required />
           </div>
           <div class="form-group">
             <label>Contraseña</label>
-            <input type="password" id="loginPass" placeholder="••••••••" required />
+            <input type="password" id="loginPass" placeholder="" required />
           </div>
           <p id="loginError" style="color: #f87171; font-size: 0.82rem; margin-bottom: 10px; display: none;">
             Usuario o contraseña incorrectos.
@@ -967,7 +967,7 @@
           </div>
           <div class="form-group">
             <label>Número de WhatsApp (con código de país, sin + ni espacios)</label>
-            <input type="text" id="cfgWhatsapp" placeholder="Ej. 50588888888" required />
+            <input type="text" id="cfgWhatsapp" placeholder="50578154326" required />
           </div>
           <div class="form-group">
             <label>Mensaje de bienvenida / entregas</label>
@@ -986,7 +986,7 @@
     const DEFAULT_CONFIG = {
       storeName: "Alvir Moto Store",
       storeSubtitle: "Repuestos y Accesorios para Motos • Managua, Nicaragua",
-      whatsappNumber: "50588888888", // Cámbialo en el panel de dueño por tu número real
+      whatsappNumber: "50578154326",
       bannerText: "📍 Entregas personales en Managua y envíos disponibles. Toca cualquier producto para ver detalles y pedirlo por WhatsApp."
     };
 
@@ -996,7 +996,7 @@
 
   <script>
     // CREDENCIALES DE DUEÑO
-    const ADMIN_USER = "dueño albir motostore";
+    const ADMIN_USER = "Dueño Alvir Moto Store";
     const ADMIN_PASS = "12344321";
 
     // ESTADO DE LA APLICACIÓN
@@ -1025,7 +1025,7 @@
       document.getElementById("storeBannerText").textContent = storeConfig.bannerText;
       document.getElementById("footerStoreName").textContent = storeConfig.storeName;
 
-      const cleanWa = storeConfig.whatsappNumber.replace(/\D/g, "");
+      const cleanWa = (storeConfig.whatsappNumber || "50578154326").replace(/\D/g, "") || "50578154326";
       const generalMsg = encodeURIComponent(`Hola ${storeConfig.storeName}, vengo de su catálogo web y me gustaría hacer una consulta.`);
       document.getElementById("topWhatsappBtn").href = `https://wa.me/${cleanWa}?text=${generalMsg}`;
     }
@@ -1102,7 +1102,7 @@
       statusEl.textContent = getStatusLabel(p.status);
       statusEl.className = `detail-status-pill status-${p.status || "disponible"}`;
 
-      const cleanWa = storeConfig.whatsappNumber.replace(/\D/g, "");
+      const cleanWa = (storeConfig.whatsappNumber || "50578154326").replace(/\D/g, "") || "50578154326";
       const statusText = p.status === "disponible" ? "" : ` (vi que aparece como ${getStatusLabel(p.status)}, ¿cuándo vuelve a entrar?)`;
       const waText = encodeURIComponent(
         `Hola ${storeConfig.storeName}, me interesa este producto de su catálogo:\n\n` +
