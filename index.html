@@ -1351,5 +1351,71 @@
     updateAdminUI();
     renderCatalog();
   </script>
+
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCaruf10MHlcizbM6Xt8s6f7S14b8B2Rsg",
+    authDomain: "alvir-moto-store-catalog-110bd.firebaseapp.com",
+    projectId: "alvir-moto-store-catalog-110bd",
+    storageBucket: "alvir-moto-store-catalog-110bd.firebasestorage.app",
+    messagingSenderId: "440605708257",
+    appId: "1:440605708257:web:befa27f023ddbb38514ca0",
+    measurementId: "G-M3CCL9Z2PL"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const catalogRef = doc(db, "alvirMotoStore", "catalogoPrincipal");
+
+  const saveToLocalOriginal = typeof saveToLocal === "function" ? saveToLocal : null;
+
+  window.saveToLocal = async function (...args) {
+    if (saveToLocalOriginal) {
+      saveToLocalOriginal.apply(this, args);
+    }
+    try {
+      await setDoc(catalogRef, {
+        productos: typeof productos !== "undefined" ? productos : [],
+        storeConfig: typeof storeConfig !== "undefined" ? storeConfig : {},
+        actualizadoEn: new Date().toISOString()
+      }, { merge: true });
+    } catch (err) {
+      console.error("Error guardando en Firestore:", err);
+    }
+  };
+
+  async function cargarDesdeFirestore() {
+    try {
+      const snap = await getDoc(catalogRef);
+      if (!snap.exists()) return;
+      const data = snap.data();
+      let huboCambios = false;
+
+      if (Array.isArray(data.productos) && typeof productos !== "undefined") {
+        productos = data.productos;
+        huboCambios = true;
+      }
+      if (data.storeConfig && typeof storeConfig !== "undefined") {
+        storeConfig = { ...storeConfig, ...data.storeConfig };
+        huboCambios = true;
+      }
+      if (saveToLocalOriginal && huboCambios) {
+        saveToLocalOriginal();
+      }
+      if (huboCambios) {
+        if (typeof aplicarStoreConfig === "function") aplicarStoreConfig();
+        if (typeof actualizarAdminUI === "function") actualizarAdminUI();
+        if (typeof renderCatalog === "function") renderCatalog();
+      }
+    } catch (err) {
+      console.error("Error cargando desde Firestore:", err);
+    }
+  }
+
+  cargarDesdeFirestore();
+  </script>
 </body>
 </html>
