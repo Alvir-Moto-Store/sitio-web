@@ -1378,7 +1378,7 @@
     }
     try {
       await setDoc(catalogRef, {
-        productos: typeof productos !== "undefined" ? productos : [],
+        products: typeof products !== "undefined" ? products : [],
         storeConfig: typeof storeConfig !== "undefined" ? storeConfig : {},
         actualizadoEn: new Date().toISOString()
       }, { merge: true });
@@ -1394,8 +1394,8 @@
       const data = snap.data();
       let huboCambios = false;
 
-      if (Array.isArray(data.productos) && typeof productos !== "undefined") {
-        productos = data.productos;
+      if (Array.isArray(data.products) && typeof products !== "undefined") {
+        products = data.products;
         huboCambios = true;
       }
       if (data.storeConfig && typeof storeConfig !== "undefined") {
